@@ -4,13 +4,16 @@ FROM node:16
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy only package.json first
-COPY package.json ./
+# Copy package.json and package-lock.json (if available)
+COPY package.json package-lock.json ./
+
+# Install all dependencies, including devDependencies
+RUN npm install --legacy-peer-deps
 
 # Copy the rest of the application code
 COPY . .
 
-# Build the application (if needed)
+# Build the application
 RUN npm run build
 
 # Expose the port that the app runs on
