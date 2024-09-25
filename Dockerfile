@@ -4,13 +4,10 @@ FROM node:16
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json (if available)
-COPY package.json package-lock.json ./
+# Copy package.json (ignore package-lock.json if it doesn't exist)
+COPY package.json ./
 
-# Set the environment to development so that devDependencies are installed
-ENV NODE_ENV=development
-
-# Install all dependencies, including devDependencies
+# Install dependencies, including devDependencies
 RUN npm install --legacy-peer-deps
 
 # Copy the rest of the application code
