@@ -3,7 +3,7 @@ name: Build and Push Docker Image to ECR
 on:
   push:
     branches:
-      - master
+      - master  # Change 'master' to 'main' if that's your default branch
 
 jobs:
   build:
@@ -11,26 +11,26 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  # Make sure you're using the latest version
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3  # Latest version for better compatibility
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Using secrets for access key
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # Using secrets for secret key
+          aws-region: ${{ secrets.AWS_REGION }}  # AWS region from secrets
 
       - name: Log in to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v2
+        uses: aws-actions/amazon-ecr-login@v2  # No need for region input here, it's configured above
 
       - name: Build the Docker image
         run: |
-          docker build -t medusa-app .
-          docker tag medusa-app:latest ${{ secrets.ECR_REPOSITORY }}:latest
+          docker build -t medusa-app .  # Build the Docker image with the tag 'medusa-app'
+          docker tag medusa-app:latest ${{ secrets.ECR_REPOSITORY }}:latest  # Tag it with your ECR repository
 
       - name: Push the Docker image to ECR
         run: |
-          docker push ${{ secrets.ECR_REPOSITORY }}:latest
+          docker push ${{ secrets.ECR_REPOSITORY }}:latest  # Push the image to your ECR repository
