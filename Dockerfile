@@ -4,15 +4,15 @@ FROM node:16
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json first to install dependencies
+# Copy only package.json first
 COPY package.json ./
 
-# Copy package-lock.json if it exists (optional)
-# This command is ignored if package-lock.json doesn't exist
-COPY package-lock.json ./ || true
+# Copy package-lock.json if it exists, otherwise ignore it
+# The Dockerfile doesn't attempt to copy a missing file
+COPY . .
 
-# Install dependencies using npm
-RUN npm install
+# Install dependencies using npm, checking if package-lock.json exists
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 # Copy the rest of the application code
 COPY . .
