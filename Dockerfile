@@ -7,6 +7,9 @@ WORKDIR /app
 # Copy package.json and package-lock.json (if available)
 COPY package.json package-lock.json ./
 
+# Set the environment to development so that devDependencies are installed
+ENV NODE_ENV=development
+
 # Install all dependencies, including devDependencies
 RUN npm install --legacy-peer-deps
 
