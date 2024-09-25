@@ -1,36 +1,41 @@
-name: Build and Push Docker Image to ECR
+name: CICD
 
 on:
   push:
-    branches:
-      - master  # Or 'master', depending on your branch name
+    branches: [ master ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
+  build-and-deploy:
+    runs-on: [ ubuntu-latest ]
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
+      - name: Checkout source
+        uses: actions/checkout@v3
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v3
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}   # Access key from GitHub Secrets
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # Secret key from GitHub Secrets
-          aws-region: us-east-1  # Hard-coded AWS region (replace with your region if different)
-
-      - name: Log in to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build the Docker image
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'us-east-1'
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: 'true'
+          
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+          REPOSITORY: medusa-app
         run: |
-          docker build -t medusa-app .
-          docker tag medusa-app:latest ${{ secrets.ECR_REPOSITORY }}:latest  # Tag with ECR repo URI
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
+          docker build -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT    
 
-      - name: Push the Docker image to ECR
-        run: |
-          docker push ${{ secrets.ECR_REPOSITORY }}:latest  # Push to ECR
+      
+   
+    
