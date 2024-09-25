@@ -7,13 +7,6 @@ WORKDIR /app
 # Copy only package.json first
 COPY package.json ./
 
-# Copy package-lock.json if it exists, otherwise ignore it
-# The Dockerfile doesn't attempt to copy a missing file
-COPY . .
-
-# Install dependencies using npm, checking if package-lock.json exists
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
-
 # Copy the rest of the application code
 COPY . .
 
