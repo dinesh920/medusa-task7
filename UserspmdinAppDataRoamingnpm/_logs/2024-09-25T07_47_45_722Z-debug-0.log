@@ -10,3 +10,4 @@
 9 verbose logfile logs-max:10 dir:C:\medusa-task7\my-medusa-store\UserspmdinAppDataRoamingnpm\_logs\2024-09-25T07_47_45_722Z-
 10 verbose logfile C:\medusa-task7\my-medusa-store\UserspmdinAppDataRoamingnpm\_logs\2024-09-25T07_47_45_722Z-debug-0.log
 11 silly logfile done cleaning log files
+12 http fetch GET 200 https://registry.npmjs.org/npm 376ms
